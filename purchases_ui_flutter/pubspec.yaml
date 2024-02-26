@@ -7,15 +7,14 @@ documentation: https://docs.revenuecat.com/docs
 
 environment:
   # TODO: Check constraints are ok
-  sdk: ">=3.2.3 <4.0.0"
-  flutter: ">=3.3.0"
+  sdk: '>=3.2.3 <4.0.0'
+  flutter: '>=3.3.0'
 
 dependencies:
   # We can't depend on exactly the same version
   # because it won't be available when bumping the version
   # until it's released.
-  purchases_flutter:
-    path: "../purchases_flutter"
+  purchases_flutter: ^6.0.0
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
