@@ -57,7 +57,8 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                 result,
                 requiredEntitlementIdentifier: nil,
                 offeringIdentifier: args[Parameter.offeringIdentifier.rawValue] as? String,
-                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool
+                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool,
+                mode: args[Parameter.paywallViewMode.rawValue] as? Bool
             )
         case "presentPaywallIfNeeded":
             guard let args = call.arguments as? Dictionary<String, Any> else {
@@ -77,8 +78,7 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                 result,
                 requiredEntitlementIdentifier: requiredEntitlementIdentifier,
                 offeringIdentifier: args[Parameter.offeringIdentifier.rawValue] as? String,
-                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool,
-
+                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool                
             )
         default:
             result(FlutterMethodNotImplemented)
@@ -89,7 +89,8 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
         _ result: @escaping FlutterResult,
         requiredEntitlementIdentifier: String?,
         offeringIdentifier: String?,
-        displayCloseButton: Bool?
+        displayCloseButton: Bool?,
+        mode: String?
     ) {
         #if os(iOS)
         if #available(iOS 15.0, *) {
@@ -102,14 +103,12 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                         offeringIdentifier: offeringIdentifier,
                         displayCloseButton: displayCloseButton,
                         paywallResultHandler: result,
-                        mode: PaywallViewMode(rawValue: paywallViewMode ?? "full_screen")
                     )
                 } else {
                     self.paywallProxy.presentPaywallIfNeeded(
                         requiredEntitlementIdentifier: requiredEntitlementIdentifier,
                         displayCloseButton: displayCloseButton,
                         paywallResultHandler: result,
-                        mode: PaywallViewMode(rawValue: paywallViewMode ?? "full_screen")
                     )
                 }
             } else {
@@ -151,7 +150,7 @@ private extension PaywallViewMode {
             self = .footer
         case "condensed_footer":
             self = .condensedFooter
-        case "fullScreen":
+        case "full_screen":
         default:
             self = .fullScreen
         }
