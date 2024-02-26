@@ -77,7 +77,8 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                 result,
                 requiredEntitlementIdentifier: requiredEntitlementIdentifier,
                 offeringIdentifier: args[Parameter.offeringIdentifier.rawValue] as? String,
-                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool
+                displayCloseButton: args[Parameter.displayCloseButton.rawValue] as? Bool,
+
             )
         default:
             result(FlutterMethodNotImplemented)
@@ -100,13 +101,15 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                         requiredEntitlementIdentifier: requiredEntitlementIdentifier,
                         offeringIdentifier: offeringIdentifier,
                         displayCloseButton: displayCloseButton,
-                        paywallResultHandler: result
+                        paywallResultHandler: result,
+                        mode: PaywallViewMode(rawValue: paywallViewMode ?? "full_screen")
                     )
                 } else {
                     self.paywallProxy.presentPaywallIfNeeded(
                         requiredEntitlementIdentifier: requiredEntitlementIdentifier,
                         displayCloseButton: displayCloseButton,
-                        paywallResultHandler: result
+                        paywallResultHandler: result,
+                        mode: PaywallViewMode(rawValue: paywallViewMode ?? "full_screen")
                     )
                 }
             } else {
@@ -114,7 +117,8 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
                     self.paywallProxy.presentPaywall(
                         offeringIdentifier: offeringIdentifier,
                         displayCloseButton: displayCloseButton,
-                        paywallResultHandler: result
+                        paywallResultHandler: result,
+                        mode: PaywallViewMode(rawValue: paywallViewMode ?? "full_screen")
                     )
                 } else {
                     self.paywallProxy.presentPaywall(displayCloseButton: displayCloseButton,
@@ -132,11 +136,24 @@ public class PurchasesUiFlutterPlugin: NSObject, FlutterPlugin {
 }
 
 private extension PurchasesUiFlutterPlugin {
-
     enum Parameter: String {
         case requiredEntitlementIdentifier
         case offeringIdentifier
         case displayCloseButton
+        case paywallViewMode
     }
+}
 
+private extension PaywallViewMode {
+    public init?(rawValue: String) {
+        switch rawValue {
+        case "footer":
+            self = .footer
+        case "condensed_footer":
+            self = .condensedFooter
+        case "fullScreen":
+        default:
+            self = .fullScreen
+        }
+    }
 }

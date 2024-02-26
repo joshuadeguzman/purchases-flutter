@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:purchases_flutter/models/offering_wrapper.dart';
 
 import 'paywall_result.dart';
+import 'paywall_view_mode.dart';
 
 export 'paywall_result.dart';
 
@@ -15,14 +16,15 @@ class RevenueCatUI {
   static Future<PaywallResult> presentPaywall({
     Offering? offering,
     bool displayCloseButton = false,
+    PaywallViewMode? viewMode,
   }) async {
     final result = await _methodChannel.invokeMethod('presentPaywall', {
       'offeringIdentifier': offering?.identifier,
       'displayCloseButton': displayCloseButton,
+      'paywallViewMode': _parseViewModeToString(viewMode),
     });
     return _parseStringToResult(result);
   }
-
 
   /// Presents the paywall as an activity on android or a modal in iOS as long
   /// as the user does not have the given entitlement identifier active.
@@ -33,15 +35,16 @@ class RevenueCatUI {
   /// @param [displayCloseButton] Optionally present the paywall with a close button.
   static Future<PaywallResult> presentPaywallIfNeeded(
     String requiredEntitlementIdentifier, {
-      Offering? offering,
+    Offering? offering,
     bool displayCloseButton = false,
+    PaywallViewMode? viewMode,
   }) async {
     final result = await _methodChannel.invokeMethod(
       'presentPaywallIfNeeded',
       {
         'requiredEntitlementIdentifier': requiredEntitlementIdentifier,
         'offeringIdentifier': offering?.identifier,
-        'displayCloseButton': displayCloseButton,
+        'paywallViewMode': _parseViewModeToString(viewMode),
       },
     );
     return _parseStringToResult(result);
@@ -61,6 +64,18 @@ class RevenueCatUI {
         return PaywallResult.restored;
       default:
         return PaywallResult.error;
+    }
+  }
+
+  static String _parseViewModeToString(PaywallViewMode? viewMode) {
+    switch (viewMode) {
+      case PaywallViewMode.footer:
+        return 'footer';
+      case PaywallViewMode.condensed:
+        return 'condensed';
+      case PaywallViewMode.fullscreen:
+      default:
+        return 'full_screen';
     }
   }
 }
